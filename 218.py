@@ -1,43 +1,87 @@
-# n = int(input())
-# strn = []
-# for i in range(n):
-#     s = input()
-#     strn.append(s)
-# c = len(strn)
-# for j in range(c-1):
-#     for t in range(j+1,c+1):
-#     if strn[j][-1] == strn[t][0]:
-#         ss = strn[j][:-1]+strn[j][-1]+strn[t][1:]
-#         strn.append(ss)
-#     if strn[t][-1] == strn[j][0]:
-#         ss1 = strn[t][:-1]+strn[t][-1]+strn[j][1:]
-#         strn.append(ss1)
-# for strt in 
-
-n = int(input())
-strn = []
+class node:  
+    def __init__(self,ch):  
+        self.ch = ch            
+        self.fail = None        
+        self.tail = 0           
+        self.child = []        
+        self.childvalue = []             
+class acmation:           
+    def __init__(self):                   
+        self.root = node("")                     
+        self.count = 0                            
+    def insert(self,strkey):       
+        self.count += 1                             
+        p = self.root  
+        for i in strkey:  
+            if i not in p.childvalue:               
+                child = node(i)  
+                p.child.append(child)  
+                p.childvalue.append(i)  
+                p = child  
+            else :                                 
+                p = p.child[p.childvalue.index(i)]  
+        p.tail = self.count                         
+  
+    def ac_automation(self):                                                  
+        queuelist = [self.root]                     
+        while len(queuelist):                      
+            temp = queuelist[0]  
+            queuelist.remove(temp)                  
+            for i in temp.child:  
+                if temp == self.root:               
+                    i.fail = self.root  
+                else:  
+                    p = temp.fail                  
+                    while p:                          
+                        if i.ch in p.childvalue:    
+                            i.fail = p.child[p.childvalue.index(i.ch)]  
+                            break  
+                        p = p.fail                 
+                    if not p:                       
+                        i.fail = self.root  
+                queuelist.append(i)                 
+ 
+    def runkmp(self,strmode):
+        p = self.root  
+        cnt = {}                                                         
+        for i in strmode:          
+            while i not in p.childvalue and p is not self.root:  
+                p = p.fail  
+            if i in p.childvalue: 
+                p = p.child[p.childvalue.index(i)]  
+            else :                                    
+                p = self.root  
+            temp = p  
+            while temp is not self.root:              
+                if temp.tail:
+                    if temp.tail not in cnt:  
+                        cnt.setdefault(temp.tail)  
+                        cnt[temp.tail] = 1  
+                    else:  
+                        cnt[temp.tail] += 1  
+                temp = temp.fail
+        return cnt
+n = int(raw_input())
+key = []
 for i in range(n):
-    s = input()
-    strn.append(s)
-goalstr = input()
-strdf = {}
-strdb = {}
-strl = []
-strnt = strn.copy()
-strlist = [chr(i) for i in range(ord('a'),ord('z')+1)]
-for s in strlist:
-    for ss in strn:
-        if ss[0] == s:
-            if s not in strdf.keys():
-                strdf[s] = list(ss)
-            else:
-                strdf[s].append(ss)
-for s in strlist:
-    for ss in strn:
-        if ss[-1] == s:
-            if s not in strdb.keys():
-                strdb[s] = list(ss)
-            else:
-                strdb[s].append(ss)
-print(strdf)
-print(strdb)
+    s = raw_input()
+    key.append(s)
+text = raw_input()
+acp = acmation()
+for i in key:
+    acp.insert(i)                          
+acp.ac_automation()
+d = acp.runkmp(text)                    
+textlist = []
+for i in d.keys():
+    text1 = text
+    textlist.append(list(text1.replace(key[i-1],'*'*len(key[i-1]))))
+output = ''
+for i in range(len(text)):
+    for j in range(len(textlist)):
+        if textlist[j][i] == '*':
+            output = output + '*'
+            break
+    if len(output)<(i+1):
+        output = output+text[i]
+print(output)

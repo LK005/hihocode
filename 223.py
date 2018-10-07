@@ -33,3 +33,6 @@ else:
                 break
     else:
         print(-1)
+'''
+LK005
+'''
